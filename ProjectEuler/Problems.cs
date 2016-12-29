@@ -17,6 +17,52 @@ namespace ProjectEuler
             MethodInfo theMethod = thisType.GetMethod("Problem"+n);
             return (long)theMethod.Invoke(this,null);
         }
+
+        public static long Problem15()
+        {
+            /*
+             * Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down, there are exactly 6 routes to the bottom right corner.
+             * How many such routes are there through a 20×20 grid?
+             */
+
+            int sideX = 20;
+            int sideY = 20;
+
+            long[,] points = new long[sideX+1,sideY+1];
+
+            points[0, 0] = 1;
+
+            for (int x = 0; x <= sideX; x++)
+            {
+                for (int y = 0; y <= sideY; y++)
+                {
+                    points[x, y] = 1;
+                }
+            }
+
+            for (int x=1;x<=sideX;x++)
+            {
+                for (int y = 1; y <= sideY; y++)
+                {
+                    points[x,y] = points[x, y-1] + points[x-1,y];
+                }
+            }
+
+            //Output
+            /*
+            for (int x = 0; x < sideX; x++)
+            {
+                for (int y = 0; y < sideY; y++)
+                {
+                    Console.Write(points[x, y] + " ");
+                }
+                Console.WriteLine();
+            }
+            */
+
+            return points[sideX, sideY];
+        }
+
         public static long Problem16()
         {
             /*
@@ -32,6 +78,22 @@ namespace ProjectEuler
             {
                 result += (int)(number % 10);
                 number /= 10;
+            }
+
+            return result;
+        }
+
+        public static long Problem17()
+        {
+            /*
+            If the numbers 1 to 5 are written out in words: one, two, three, four, five, then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
+            If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, how many letters would be used?
+            */
+            long result = 0;
+
+            for (int i=1; i<=1000;i++)
+            {
+                result += Formulas.NumberToString(i).Length;
             }
 
             return result;
@@ -247,6 +309,77 @@ namespace ProjectEuler
             return result;
         }
 
+        public static long Problem23()
+        {
+            /*
+            vA perfect number is a number for which the sum of its proper divisors is exactly equal to the number. For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28, which means that 28 is a perfect number.
+            A number n is called deficient if the sum of its proper divisors is less than n and it is called abundant if this sum exceeds n.
+            As 12 is the smallest abundant number, 1 + 2 + 3 + 4 + 6 = 16, the smallest number that can be written as the sum of two abundant numbers is 24. By mathematical analysis, it can be shown that all integers greater than 28123 can be written as the sum of two abundant numbers. However, this upper limit cannot be reduced any further by analysis even though it is known that the greatest number that cannot be expressed as the sum of two abundant numbers is less than this limit.
+            Find the sum of all the positive integers which cannot be written as the sum of two abundant numbers.
+            */
+            Stopwatch w = new Stopwatch();
+            long result = 0;
+            int sum = 0;
+
+            int limit = 28123;
+
+            List<int> abundantNumbers = new List<int>();
+
+            w.Start();
+
+            for(int i=1;i< limit; i++)
+            {
+                sum = 0;
+
+                for(int j=1;j<(i/2)+1;j++)
+                {
+                    if(i % j == 0)
+                    {
+                        sum += j;
+                    }
+                }
+
+                if(sum > i)
+                {
+                    abundantNumbers.Add(i);
+                }
+            }
+            Console.WriteLine("Processed the abundant numbers after " + w.ElapsedMilliseconds +" ms");
+
+            bool[] canBeWrittenasAbundent = new bool[limit + 1];
+
+
+            for (int i = 0; i < abundantNumbers.Count; i++)
+            {
+                for (int j = i; j < abundantNumbers.Count; j++)
+                {
+                    if (abundantNumbers[i] + abundantNumbers[j] <= limit)
+                    {
+                        canBeWrittenasAbundent[abundantNumbers[i] + abundantNumbers[j]] = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            Console.WriteLine("Processed the abundant sums after " + w.ElapsedMilliseconds + " ms");
+
+            for (int i=0;i< limit; i++)
+            {
+                if(!canBeWrittenasAbundent[i])
+                {
+                    result += i;
+                }
+            }
+            Console.WriteLine("Processed the non-abundant sum numbers after " + w.ElapsedMilliseconds + " ms");
+
+            w.Stop();
+
+            return result;
+        }
+
         public static long Problem24()
         {
             /*
@@ -305,6 +438,61 @@ namespace ProjectEuler
             }
 
             return terms.Count;
+        }
+
+        public static long Problem26()
+        {
+            int largestResult = 0;
+            int largestResultKey = 0;
+            for(int d=1;d<1000;d++)
+            {
+                decimal input = Decimal.Divide(1.0M, (decimal)d);
+                string res = Formulas.GetDecimalCycle(input, 28);
+
+                if(res.Length > largestResult)
+                {
+                    largestResultKey = d;
+                    largestResult = res.Length;
+
+                    Console.WriteLine("Found result {0} with string {1}", d, res);
+                }
+            }
+            return (long)largestResultKey;
+        }
+
+        public static long Problem49()
+        {
+            /*
+            The arithmetic sequence, 1487, 4817, 8147, in which each of the terms increases by 3330, is unusual in two ways: (i) each of the three terms are prime, and, (ii) each of the 4-digit numbers are permutations of one another.
+            There are no arithmetic sequences made up of three 1-, 2-, or 3-digit primes, exhibiting this property, but there is one other 4-digit increasing sequence.
+            What 12-digit number do you form by concatenating the three terms in this sequence?
+            */
+
+            List<long> primes = Formulas.PrimeSieve(10000);
+            List<long> numbers = new List<long>();
+            List<string> results = new List<string>();
+
+            int limit = 10000;
+
+            foreach (long n in primes)
+            {
+                if (n > 1000)
+                    numbers.Add(n);
+            }
+
+            for(int i=0;i<numbers.Count();i++)
+            {
+                for (int j = i + 1; j < numbers.Count; j++)
+                {
+                    long k = numbers[j] + (numbers[j] - numbers[i]);
+
+                    if (k < limit && numbers.Contains(k))
+                        if (Formulas.IsPermutation((int)numbers[i], (int)numbers[j]) && Formulas.IsPermutation((int)numbers[i], (int)k))
+                            if(numbers[i] != 1487)
+                                results.Add(String.Concat(numbers[i], numbers[j], k));
+                }
+            }
+            return Int64.Parse(results[0]);
         }
 
         public static long Problem67()
