@@ -10,23 +10,46 @@ namespace ProjectEuler
 {
     public static class Formulas
     {
-        public static string GetDecimalCycle(int divisor)
+        public static int RightAngleTriangles(int perimeter)
         {
-            int[] foundRemainders = new int[divisor];
-            int value = 1;
-            int position = 0;
 
-            while (foundRemainders[value] == 0 && value != 0)
+        }
+
+        public static bool isPentagonal(int number)
+        {
+            double penTest = (Math.Sqrt(1 + 24 * number) + 1.0) / 6.0;
+            return penTest == ((int)penTest);
+        }
+
+        public static List<BigInteger> Pentagonal(long n, long m)
+        {
+            List<BigInteger> numbers = new List<BigInteger>();
+
+            for(long i=n;i<m;i++)
             {
-                foundRemainders[value] = position;
-                value *= 10;
-                value %= divisor;
-                position++;
+                numbers.Add(i * ((3 * i) - 1) / 2);
             }
 
-            if (position - foundRemainders[value] > sequenceLength)
+            return numbers;
+        }
+        public static bool IsPalindrome(string value)
+        {
+            int min = 0;
+            int max = value.Length - 1;
+            while (true)
             {
-                sequenceLength = position - foundRemainders[value];
+                if (min > max)
+                {
+                    return true;
+                }
+                char a = value[min];
+                char b = value[max];
+                if (char.ToLower(a) != char.ToLower(b))
+                {
+                    return false;
+                }
+                min++;
+                max--;
             }
         }
 

@@ -442,22 +442,117 @@ namespace ProjectEuler
 
         public static long Problem26()
         {
-            int largestResult = 0;
-            int largestResultKey = 0;
-            for(int d=1;d<1000;d++)
+            return -1;
+        }
+
+        public static long Problem31()
+        {
+            /*
+            In England the currency is made up of pound, £, and pence, p, and there are eight coins in general circulation:
+            1p, 2p, 5p, 10p, 20p, 50p, £1 (100p) and £2 (200p).
+            It is possible to make £2 in the following way:
+            1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+            How many different ways can £2 be made using any number of coins?
+            */
+
+            List<int> coins = new List<int>() { 1, 2, 5, 10, 20, 50, 100, 200 };
+            long result = 0L;
+            int limit = 200;
+            int sum = 0;
+
+            for(int i = 0;i<= limit; i+=200)
             {
-                decimal input = Decimal.Divide(1.0M, (decimal)d);
-                string res = Formulas.GetDecimalCycle(input, 28);
-
-                if(res.Length > largestResult)
+                for (int j = 0; j <= limit; j += 100)
                 {
-                    largestResultKey = d;
-                    largestResult = res.Length;
+                    for (int k = 0; k <= limit; k += 50)
+                    {
+                        for (int l = 0; l <= limit; l += 20)
+                        {
+                            for (int m = 0; m <= limit; m += 10)
+                            {
+                                for (int n = 0; n <= limit; n += 5)
+                                {
+                                    for (int o = 0; o <= limit; o += 2)
+                                    {
+                                        for (int p = 0; p <= limit; p += 1)
+                                        {
+                                            sum = i + j + k + l + m + n + o + p;
 
-                    Console.WriteLine("Found result {0} with string {1}", d, res);
+                                            if(sum == 200)
+                                            {
+                                                result++;
+                                            }
+                                            else if(sum > 200)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            return (long)largestResultKey;
+
+            return result;
+        }
+
+        public static long Problem36()
+        {
+            /*
+            The decimal number, 585 = 1001001001 (binary), is palindromic in both bases.
+            Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+            (Please note that the palindromic number, in either base, may not include leading zeros.)
+            */
+
+            long result = 0L;
+
+            for(int i=0;i<1000000;i++)
+            {
+                string b = Convert.ToString(i, 2);
+                if (Formulas.IsPalindrome(b) && Formulas.IsPalindrome(Convert.ToString(i)))
+                {
+                    Console.Out.WriteLine(i + " -> " + b);
+                    result += i;
+                }
+            }
+
+            return result;
+        }
+
+        public static long Problem39()
+        {
+            for(int i=0;i<1000;i++)
+            {
+
+            }
+        }
+
+        public static long Problem44()
+        {
+            int result = 0;
+            bool notFound = true;
+            int i = 1;
+
+            while (notFound)
+            {
+                i++;
+                int n = i * (3 * i - 1) / 2;
+
+                for (int j = i - 1; j > 0; j--)
+                {
+                    int m = j * (3 * j - 1) / 2;
+                    if (Formulas.isPentagonal(n - m) && Formulas.isPentagonal(n + m))
+                    {
+                        result = n - m;
+                        notFound = false;
+                        break;
+                    }
+                }
+            }
+
+            return result;
         }
 
         public static long Problem49()
@@ -494,6 +589,8 @@ namespace ProjectEuler
             }
             return Int64.Parse(results[0]);
         }
+
+
 
         public static long Problem67()
             {
