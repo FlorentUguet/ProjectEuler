@@ -63,6 +63,9 @@
     <Content Include="res\p022_names.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="res\p042_words.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="res\p067_triangle.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

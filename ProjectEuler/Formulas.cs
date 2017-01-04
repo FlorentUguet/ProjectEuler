@@ -10,9 +10,136 @@ namespace ProjectEuler
 {
     public static class Formulas
     {
-        public static int RightAngleTriangles(int perimeter)
+        public static long FactorialFromDigits(long n)
         {
+            string s = n.ToString();
 
+            long res = 0;
+
+            foreach(char c in s)
+            {
+                res += (long)Factorial(Int32.Parse(c.ToString()));
+            }
+
+            return res;
+        }
+
+        public static bool isTriangular(long n)
+        {
+            double buf = Math.Sqrt(8 * n + 1);
+            return (buf ==  Math.Floor(buf));
+        }
+
+        public static bool isTruncatable(long n)
+        {
+            string nString = n.ToString();
+
+            for(int i=0;i<nString.Length;i++)
+            {
+                string s = nString.Substring(i);
+                if (!isPrime(long.Parse(s)))
+                    return false;
+            }
+
+            for (int i = 0; i < nString.Length; i++)
+            {
+                string s = nString.Substring(0,nString.Length - i);
+                if (!isPrime(long.Parse(s)))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static long NumberOfRightAngleTriangles(int p)
+        {
+            long result = 0;
+
+            for(int a = 1; a < p; a++)
+            {
+                for (int b = 1; b < a; b++)
+                {
+                    int c = p - b - a;
+
+                    if (c < b)
+                        break;
+
+  
+                    if(a*a == b*b + c*c && a+b+c == p)
+                    {
+                        result++;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static bool isPandigital(long n)
+        {
+            int l = n.ToString().Length;
+
+            if(l <= 9)
+            {
+                return isPandigital(n, 1, l);
+            }
+            else if(l == 10)
+            {
+                return isPandigital(n, 0, 9);
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+
+        public static bool isPandigital(long n, int min, int max)
+        {
+            if (n.ToString().Length != (max-min+1))
+                return false;
+
+            for(int i=min; i<=max;i++)
+                if (!n.ToString().Contains(i.ToString()))
+                    return false;
+
+            return true;
+        }
+
+        public static long LargestPandigital(int minDigit, int maxDigit)
+        {
+            string res = "0";
+            int res_n;
+            int res_i;
+            int n = 1;
+
+            int nDigits = maxDigit - minDigit + 1;
+
+            while(n.ToString().Length <= nDigits / 2)
+            {
+                if(n.ToString().Length > nDigits)
+                    break;
+
+                string buf = "";
+                int i = 1;
+
+                do
+                {
+                    buf = buf + (i * n);
+                    i++;
+                } while ((buf + (i * n)).Length <= nDigits);
+
+                if ( i>2 && Int64.Parse(buf) > Int64.Parse(res) && isPandigital(Int64.Parse(buf), minDigit, maxDigit))
+                {
+                    res = buf;
+                    res_n = n;
+                    res_i = i - 1;
+                }
+
+                n++;
+            }
+
+            return Int64.Parse(res);
         }
 
         public static bool isPentagonal(int number)
@@ -32,6 +159,7 @@ namespace ProjectEuler
 
             return numbers;
         }
+
         public static bool IsPalindrome(string value)
         {
             int min = 0;
@@ -80,6 +208,27 @@ namespace ProjectEuler
             }
             return true;
         }
+
+        public static bool isPrime(long n)
+        {
+            if (n <= 1)
+                return false;
+            else if( n <= 3)
+                return true;
+            else if (n % 2 == 0 || n % 3 == 0)
+                return false;
+
+            int i = 5;
+            while(i*i <= n)
+            {
+                if (n % i == 0 || n % (i + 2) == 0)
+                    return false;
+                i = i + 6;
+            }
+
+            return true;
+        }
+
         public static List<long> PrimeSieve(long n)
         {
             List<long> numbers = new List<long>();
@@ -106,6 +255,7 @@ namespace ProjectEuler
 
             return numbers;
         }
+
         public static int SumOfFactors(int number)
         {
             int sqrtOfNumber = (int)Math.Sqrt(number);
@@ -318,12 +468,9 @@ namespace ProjectEuler
 
         public static BigInteger Factorial(BigInteger n)
         {
-            BigInteger result = 1;
-            for (BigInteger i = 1; i <= n; i++)
-            {
-                result = result * i;
-            }
-            return result;
+            if (n <= 1)
+                return 1;
+            return n * Factorial(n - 1);
         }
     }
 }
