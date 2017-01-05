@@ -9,6 +9,15 @@ using System.Reflection;
 
 namespace ProjectEuler
 {
+
+    enum Move
+    {
+        RIGHT = 0,
+        DOWN,
+        LEFT,
+        UP
+    }
+
     class Problems
     {
         public long Problem(int n)
@@ -445,6 +454,38 @@ namespace ProjectEuler
             return -1;
         }
 
+        public static long Problem28()
+        {
+            /*
+            Starting with the number 1 and moving to the right in a clockwise direction a 5 by 5 spiral is formed as follows:
+
+            21 22 23 24 25
+            20  7  8  9 10
+            19  6  1  2 11
+            18  5  4  3 12
+            17 16 15 14 13
+
+            It can be verified that the sum of the numbers on the diagonals is 101.
+
+            What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral formed in the same way?
+            */
+
+            int l = 1001;
+            long result = 1L;
+            long buf = 1L;
+
+            for (int i = 3; i <= l; i += 2)
+            {
+                for (int j = 1; j <= 4; j++)
+                {
+                    buf += (i - 1);
+                    result += buf;
+                }
+            }
+
+            return result;
+        }
+
         public static long Problem29()
         {
             /*
@@ -789,6 +830,14 @@ namespace ProjectEuler
                 }
             }
             return Int64.Parse(results[0]);
+        }
+
+        public static long Problem48()
+        {
+            double d = Math.Pow(1000, 1000) % 1000000;
+            BigInteger b = (BigInteger)d;
+            Console.WriteLine(b.ToString());
+            return -1;
         }
 
         public static long Problem67()
