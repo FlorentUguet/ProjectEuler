@@ -66,6 +66,12 @@
     <Content Include="res\p042_words.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="res\p054_poker.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="res\p059_cipher.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="res\p067_triangle.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

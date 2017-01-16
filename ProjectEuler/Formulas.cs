@@ -10,6 +10,154 @@ namespace ProjectEuler
 {
     public static class Formulas
     {
+        public static void OutputPoker(int i, int[] p1, int[] p2)
+        {
+            if (p1[i] > p2[i])
+                Console.Write("P1 WITH ");
+            else
+                Console.Write("P2 WITH ");
+
+            switch (i)
+            {
+                case 0:
+                    Console.Write("RYL FLUSH : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 1:
+                    Console.Write("STR FLUSH : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 2:
+                    Console.Write("FOUR KIND : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 3:
+                    Console.Write("FULL HOUSE: " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 4:
+                    Console.Write("FLUSH     : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 5:
+                    Console.Write("STARIGHT  : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 6:
+                    Console.Write("THREE KIND: " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 7:
+                    Console.Write("TWO PAIRS : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 8:
+                    Console.Write("ONE PAIR  : " + p1[i] + " vs " + p2[i]);
+                    break;
+                case 9:
+                    Console.Write("HIGH CARD : " + p1[i] + " vs " + p2[i]);
+                    break;
+            }
+
+            Console.WriteLine("");
+        }
+
+        public static int[] GetPokerHandScore(string hand)
+        {
+            List<string> cards = new List<string>() { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+            List<string> colors = new List<string>() { "H", "C", "S", "D" };
+
+            int[] res = new int[10];
+            string[] c = hand.Split(' ');
+
+            //9-High Card
+            for (int i = 0; i < c.Length; i++)
+                res[9] = Math.Max(res[9], cards.IndexOf(c.ElementAt(0).ElementAt(0).ToString()));
+
+            //8-One pair
+            foreach (string card in cards)
+                if (hand.Count(f => f == card.ElementAt(0)) == 2)
+                    res[8] = cards.IndexOf(card);
+
+            //7-Two pairs
+            foreach (string card in cards)
+                if (hand.Count(f => f == card.ElementAt(0)) == 2)
+                    foreach (string card2 in cards)
+                        if (card2 != card)
+                            if (hand.Count(f => f == card2.ElementAt(0)) == 2)
+                                res[7] = cards.IndexOf(card2);
+
+            //6-Three of a kind
+            foreach (string card in cards)
+                if (hand.Count(f => f == card.ElementAt(0)) == 3)
+                    res[6] = cards.IndexOf(card);
+
+            //3-Full House
+            if (res[6] > 0 && res[8] > 0)
+                res[3] = res[6];
+
+            //4-Flush
+            foreach (string color in colors)
+                if (hand.Count(f => f == color.ElementAt(0)) == 5)
+                    res[4] = 1;
+
+            //5-Straight
+            for (int i = 0; i < cards.Count - 4; i++)
+                if (hand.Contains(cards.ElementAt(i)) && hand.Contains(cards.ElementAt(i + 1)) && hand.Contains(cards.ElementAt(i + 2)) && hand.Contains(cards.ElementAt(i + 3)) && hand.Contains(cards.ElementAt(i + 4)))
+                    res[5] = i;
+            //2-Four of a kind
+            foreach (string card in cards)
+                    if (hand.Count(f => f == card.ElementAt(0)) == 4)
+                        res[2] = cards.IndexOf(card);
+
+            //0-Royal Flush
+            res[0] = 1;
+            if (res[4] < 1)
+                res[0] = 0;
+            else
+                for (int i = cards.Count - 1; i >= 8; i--)
+                    if (!hand.Contains(cards.ElementAt(i)))
+                        res[0] = 0;
+
+            //1-Straight Flush
+            if (res[4] > 0 && res[5] > 0)
+                res[1] = res[5];
+            
+
+            return res;
+        }
+
+        public static int[] Analysis(int[] message, int keyLength)
+        {
+            int maxsize = 0;
+            for (int i = 0; i < message.Length; i++)
+            {
+                if (message[i] > maxsize) maxsize = message[i];
+            }
+
+            int[,] aMessage = new int[keyLength, maxsize + 1];
+            int[] key = new int[keyLength];
+
+            for (int i = 0; i < message.Length; i++)
+            {
+                int j = i % keyLength;
+                aMessage[j, message[i]]++;
+                if (aMessage[j, message[i]] > aMessage[j, key[j]])
+                    key[j] = message[i];
+            }
+
+            int spaceAscii = 32;
+            for (int i = 0; i < keyLength; i++)
+            {
+                key[i] = key[i] ^ spaceAscii;
+            }
+
+            return key;
+        }
+
+        public static int[] Encrypt(int[] message, int[] key)
+        {
+            int[] encryptedMessage = new int[message.Length];
+
+            for (int i = 0; i < message.Length; i++)
+            {
+                encryptedMessage[i] = message[i] ^ key[i % key.Length];
+            }
+            return encryptedMessage;
+        }
+
         public static long FactorialFromDigits(long n)
         {
             string s = n.ToString();
@@ -22,6 +170,12 @@ namespace ProjectEuler
             }
 
             return res;
+        }
+
+        public static bool isHexagonal(long n)
+        {
+            double buf = (Math.Sqrt(1 + 8 * n) + 1.0) / 4.0;
+            return buf == ((long)buf);
         }
 
         public static bool isTriangular(long n)
@@ -73,6 +227,25 @@ namespace ProjectEuler
             }
 
             return result;
+        }
+
+        public static List<string> PandigitalNumbers(int minDigit, int maxDigit)
+        {
+            List<string> numbers = new List<string>();
+            List<string> c = new List<string>();
+
+            string input = "";
+
+            for(int i=minDigit;i<= maxDigit;i++)
+            {
+                input += i.ToString();
+            }
+
+            Permute(input.ToArray(), minDigit, maxDigit, numbers);
+
+            return numbers;
+
+
         }
 
         public static bool isPandigital(long n)
@@ -142,10 +315,10 @@ namespace ProjectEuler
             return Int64.Parse(res);
         }
 
-        public static bool isPentagonal(int number)
+        public static bool isPentagonal(long number)
         {
             double penTest = (Math.Sqrt(1 + 24 * number) + 1.0) / 6.0;
-            return penTest == ((int)penTest);
+            return penTest == ((long)penTest);
         }
 
         public static List<BigInteger> Pentagonal(long n, long m)
@@ -424,6 +597,11 @@ namespace ProjectEuler
             }
 
             return result;
+        }
+
+        public static void Permute(string input, List<string> results)
+        {
+            Permute(input.ToArray(), 0, input.Length - 1, results);
         }
 
         public static void Permute(char[] array, int i, int n, List<string> results)
