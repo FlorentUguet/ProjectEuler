@@ -604,6 +604,46 @@ Find the sum of all the numbers that can be written as the sum of fifth powers o
             return result;
         }
 
+        public static long Problem33()
+        {
+            int denominator = 1;
+            int numerator = 1;
+
+            for (int i=10;i<100;i++)
+            {
+                for (int j = i; j < 100; j++)
+                {
+                    for(int k=0;k<2;k++)
+                    {
+                        string istr = i.ToString();
+                        string jstr = j.ToString();
+
+                        if((i%10 != 0 && j % 10 != 0) && i != j)
+                        {
+                            if (istr.Contains(jstr.ElementAt(k)))
+                            {
+                                istr = istr.Remove(istr.IndexOf(jstr.ElementAt(k)),1);
+                                jstr = jstr.Remove(k, 1);
+
+                                int i2 = int.Parse(istr);
+                                int j2 = int.Parse(jstr);
+
+                                if ((double)i / (double)j == (double)i2 / (double)j2)
+                                {
+                                    denominator *= j2;
+                                    numerator *= i2;
+                                }
+                            }
+                        }                        
+                    }
+                }
+            }
+
+            Console.WriteLine(numerator + "/" + denominator);
+
+            return numerator / denominator;
+        }
+
         public static long Problem34()
         {
             long res = 0;
@@ -1093,5 +1133,173 @@ Find the sum of all the numbers that can be written as the sum of fifth powers o
                 return numbers[0][0];
             }
 
+        public static long Problem76()
+        {
+            int sum = 5;
+            long count = 0L;
+
+
+            return count;
+        }
+
+        public static long Problem79()
+        {
+            /*
+            A common security method used for online banking is to ask the user for three random characters from a passcode.For example, if the passcode was 531278, they may ask for the 2nd, 3rd, and 5th characters; the expected reply would be: 317.
+
+            The text file, keylog.txt, contains fifty successful login attempts.
+
+            Given that the three characters are always asked for in order, analyse the file so as to determine the shortest possible secret passcode of unknown length.
+            */
+            IEnumerable<string> passcodes = System.IO.File.ReadLines(@"res\p079_keylog.txt");
+            Dictionary<string, int> count = new Dictionary<string, int>();
+
+            long res = 0L;
+            string password = "";
+
+            foreach(string pass in passcodes)
+            {
+                int idx = 0;
+                foreach (char c in pass)
+                {
+                    int i = int.Parse(c.ToString());
+                    if(!password.Contains(c.ToString()))
+                    {
+                        password = password + c.ToString();
+                        idx = password.Length - 1;
+                    }
+                    else
+                    {
+                        idx = password.IndexOf(c,idx);
+
+                        if(idx < 0)
+                        {
+                            password = password+= c.ToString();
+                            idx = password.Length - 1;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine(password);
+
+            return 0;
+        }
+
+        public static long Problem81()
+        {
+            /*
+            In the 5 by 5 matrix below, the minimal path sum from the top left to the bottom right, by only moving to the right and down, is indicated in bold red and is equal to 2427.
+            Find the minimal path sum, in matrix.txt (right click and "Save Link/Target As..."), a 31K text file containing a 80 by 80 matrix, from the top left to the bottom right by only moving right and down.
+            */
+            IEnumerable<string> m = System.IO.File.ReadLines(@"res\p081_matrix.txt");
+            int l = m.Count();
+            int c = m.ElementAt(0).Split(',').Count();
+            int[,] matrix = new int[l,c];
+
+            //Matrice
+            for(int i=0;i<l;i++)
+                for(int j=0;j<c;j++)
+                    matrix[i,j] = int.Parse(m.ElementAt(i).Split(',').ElementAt(j));
+
+
+            //Chemin
+            for (int i = l - 1; i >= 0; i--)
+                for (int j = c - 1; j >= 0; j--)
+                    if ((i + 1 >= l) && (j + 1 >= c))
+                        matrix[i, j] = matrix[i, j];
+                    else if (i + 1 >= l)
+                        matrix[i, j] += matrix[i, j + 1];
+                    else if (j + 1 >= c)
+                        matrix[i, j] += matrix[i + 1, j];
+                    else
+                        matrix[i, j] += Math.Min(matrix[i + 1, j], matrix[i, j + 1]);
+
+
+            return matrix[0, 0];
+        }        
+
+        public static long Problem92()
+        {
+            /*
+            A number chain is created by continuously adding the square of the digits in a number to form a new number until it has been seen before.
+
+            For example,
+
+            44 → 32 → 13 → 10 → 1 → 1
+            85 → 89 → 145 → 42 → 20 → 4 → 16 → 37 → 58 → 89
+
+            Therefore any chain that arrives at 1 or 89 will become stuck in an endless loop. What is most amazing is that EVERY starting number will eventually arrive at 1 or 89.
+
+            How many starting numbers below ten million will arrive at 89?
+            */
+            Dictionary<int, int> loopingNumbers = new Dictionary<int, int>();
+            loopingNumbers.Add(1,1);
+            loopingNumbers.Add(89,89);
+
+            long res = 0L;
+
+            for(int i=1;i<10000000;i++)
+            {
+                int buf = i;
+                List<int> bufferNums = new List<int>();
+
+                while (!loopingNumbers.ContainsKey(buf))
+                {
+                    int j = 0;
+                    foreach (char c in buf.ToString())
+                    {
+                        if (j == 0)
+                            buf = 0;
+                        int k = c - 48;
+                        buf += k * k;
+                        j++;
+                    }
+
+                    bufferNums.Add(buf);
+                }
+
+                if(buf != i)
+                    loopingNumbers.Add(i,buf);
+
+                if (buf == 89)
+                {
+                    res++;
+                }
+                
+            }
+
+            return res;
+        }
+
+        public static long Problem206()
+        {
+            //Smarter bruteforce (387 420 489) possibilities
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            decimal start = Math.Floor(Formulas.Sqrt(10203040506070809.0m) / 10.0m);
+            decimal end =   Math.Floor(Formulas.Sqrt(19293949596979899.0m) / 10.0m);
+            long dr = -1L;
+
+            RegexUtil.setExpression("1.2.3.4.5.6.7.8.9");
+
+            for (long i = (long)start; i < (long)end; i++)
+            {
+                dr = i * 10 + 3;
+                if (RegexUtil.isMatching((dr * dr).ToString()))
+                    break;
+
+                dr = i * 10 + 7;
+                if (RegexUtil.isMatching((dr * dr).ToString()))
+                    break;
+
+                if(i % 10000 == 0)
+                    Console.WriteLine(((i - start) / (end - start) * 100.0m) + "%");
+            }
+            sw.Stop();
+
+            return (long)(dr*10.0m);
+        }
     }
 }
